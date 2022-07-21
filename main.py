@@ -6,7 +6,7 @@ import torch
 names = {0: "Not pizza", 1: "Pizza"}
 
 
-def show_samples(dataloader, items=None, n_samples=9):
+def show_samples(dataloader, n_samples=9, classes=None):
     """ It shows `n` samples of dataset's images
     and writes label on bottom of the image.
     
@@ -15,13 +15,13 @@ def show_samples(dataloader, items=None, n_samples=9):
     dataloader: torch.utils.data.dataloader.DataLoader
         Where will pictures be taken from.
         
-    items: dict
-        Names of items on pictures.
+    classes: dict
+        Names of classes on pictures.
         
     n_samples: int
         How much pictures to show on the screen.
         
-    """"
+    """
     
     
     if n_samples <= 0:
@@ -40,9 +40,10 @@ def show_samples(dataloader, items=None, n_samples=9):
             jump = -i
 
         plt.subplot(grid, grid, i + 1)
-        plt.imshow(torch.permute(images[i + jump], [1, 2, 0]))
-        if items is not None:
-            plt.xlabel(items[labels[i + jump].item()])
+        plt.imshow(images[i + jump].permute([1, 2, 0]))
+        
+        if classes is not None:
+            plt.xlabel(classes[labels[i + jump].item()])
         else:
             plt.axis('off')
 
