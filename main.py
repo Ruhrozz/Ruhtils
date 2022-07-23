@@ -1,54 +1,27 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import torch
+import numpy as np
+
+import ruhtils.dataset as dataset
 
 
-names = {0: "Not pizza", 1: "Pizza"}
+cfg = {
+    "backbone": "resnet50",
+    "pretrained": False,
+    "num_classes": 2,
+
+    "image_dir": "datasets/pizza_not_pizza/",
+
+    "val_size": 0.1,
+
+    "batch_size": 3,
+    "lr": 1e-3,
+    "weight_decay": 1e-2,
+    "epoch_size": 5,
+}
 
 
-def show_samples(dataloader, n_samples=9, classes=None):
-    """ It shows `n` samples of dataset's images
-    and writes label on bottom of the image.
-    
-    Parameters
-    ----------
-    dataloader: torch.utils.data.dataloader.DataLoader
-        Where will pictures be taken from.
-        
-    classes: dict
-        Names of classes on pictures.
-        
-    n_samples: int
-        How much pictures to show on the screen.
-        
-    """
-    
-    
-    if n_samples <= 0:
-        return 
-
-    plt.rcParams["figure.figsize"] = (13, 13)
-
-    grid = np.ceil(np.sqrt(n_samples)).astype(int)
-    images, labels = next(iter(dataloader))
-
-    jump = 0
-
-    for i in range(n_samples):
-        if i + jump >= len(images):
-            images, labels = next(iter(dataloader))
-            jump = -i
-
-        plt.subplot(grid, grid, i + 1)
-        plt.imshow(images[i + jump].permute([1, 2, 0]))
-        
-        if classes is not None:
-            plt.xlabel(classes[labels[i + jump].item()])
-        else:
-            plt.axis('off')
-
-
-    plt.show()
-
-show_samples(dataloader, n_samples=4)
+train, valid = dataset.make_train_valid(cfg["image_dir"],
+                                        sample=0.1,
+                                        extensions=("jpg",),
+                                        to_rgb=True)
 
