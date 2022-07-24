@@ -5,6 +5,7 @@ from torchvision.datasets import VisionDataset
 from torchvision.datasets.folder import DatasetFolder
 from typing import Tuple, Optional, Callable, List, Any
 
+
 IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".ppm", ".bmp", ".pgm", ".tif", ".tiff", ".webp")
 
 
