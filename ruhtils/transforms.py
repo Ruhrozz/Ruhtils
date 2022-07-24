@@ -1,9 +1,9 @@
 import cv2
 import albumentations as A
-from albumentations.pytorch import transforms
+from albumentations.pytorch import transforms as T
 
 
-def get_transforms(is_train=False, p=0.3):
+def get_transforms(is_train=False, p=0.5):
     if is_train:
         augs = [
             A.HorizontalFlip(p=p),
@@ -48,12 +48,12 @@ def get_transforms(is_train=False, p=0.3):
             A.RandomSunFlare(src_radius=150, p=0.2),
             A.ShiftScaleRotate(border_mode=cv2.BORDER_CONSTANT, p=0.2),
             A.Resize(256, 256),
-            transforms.ToTensorV2(),
+            T.ToTensorV2(),
         ]
     else:
         augs = [
             A.Resize(256, 256),
-            transforms.ToTensorV2(),
+            T.ToTensorV2(),
         ]
 
     augs_compose = A.Compose(augs)
