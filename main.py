@@ -1,7 +1,9 @@
 import torch
 import numpy as np
-
+import torchvision
 import ruhtils.dataset as dataset
+import ruhtils.transforms as transforms
+import matplotlib.pyplot as plt
 
 
 cfg = {
@@ -20,8 +22,14 @@ cfg = {
 }
 
 
-train, valid = dataset.make_train_valid(cfg["image_dir"],
-                                        sample=0.1,
-                                        extensions=("jpg",),
-                                        to_rgb=True)
+train_set = dataset.ImageFolder(cfg["image_dir"],
+                                use_albumentations=True,
+                                transform=transforms.get_transforms(is_train=True))
 
+valid_set = dataset.Dataset(root=cfg["image_dir"],
+                            samples=train_set.take_valid(),
+                            use_albumentations=True,
+                            transform=transforms.get_transforms())
+
+plt.imshow(valid_set[0][0].permute(1, 2, 0))
+plt.show()
