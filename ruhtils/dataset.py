@@ -23,8 +23,8 @@ class ImageFolder(DatasetFolder):
                  transform: Optional[Callable] = None,
                  target_transform: Optional[Callable] = None) -> None:
         super().__init__(root=root,
-                         target_transform=target_transform,
                          extensions=IMG_EXTENSIONS,
+                         target_transform=target_transform,
                          loader=default_loader)
 
         if use_albumentations:
@@ -59,17 +59,13 @@ class Dataset(VisionDataset):
             target_transform: Optional[Callable] = None,
             use_albumentations: bool = False,
     ) -> None:
-        super().__init__(root=root)
+        super().__init__(root=root,
+                         target_transform=target_transform)
 
         if use_albumentations and transform is not None:
             self.transform = lambda image: transform(image=image)["image"]
         else:
             self.transform = transform
-
-        if use_albumentations and target_transform is not None:
-            self.target_transform = lambda image: transform(image=image)["image"]
-        else:
-            self.target_transform = target_transform
 
         self.samples = samples
 
