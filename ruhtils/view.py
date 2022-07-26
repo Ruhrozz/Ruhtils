@@ -5,16 +5,18 @@ import torch
 
 def show_dataset(dataset: Any, height: int = 3, width: int = 4) -> None:
     images = [dataset[i][0] for i in range(height * width)]
-    size = images[0].shape
+
+    size = dataset[0][0].shape
 
     # Best regards to AetelFinch
-    image = torch.cat(images, dim=2)
-    image = torch.split(image, size[2] * width, dim=2)
-    image = torch.hstack(image)
+    if len(images):
+        image = torch.cat(images, dim=2)
+        image = torch.split(image, size[2] * width, dim=2)
+        image = torch.hstack(image)
 
-    plt.imshow(image.permute([1, 2, 0]))
-    plt.axis('off')
-    plt.show()
+        plt.imshow(image.permute([1, 2, 0]))
+        plt.axis('off')
+        plt.show()
 
 
 def show_dataloader(dataloader: Any, height: int = 3, width: int = 4) -> None:
