@@ -4,6 +4,7 @@ import numpy as np
 import torchvision
 import ruhtils.dataset as dataset
 import ruhtils.transforms as transforms
+import ruhtils.view as view
 import ruhtils.model as net
 import matplotlib.pyplot as plt
 
@@ -30,12 +31,13 @@ train_set = dataset.ImageFolder(cfg["image_dir"],
                                 use_albumentations=True,
                                 transform=transforms.get_transforms(is_train=True))
 
+
 valid_set = dataset.Dataset(root=cfg["image_dir"],
-                            samples=train_set.take_valid(),
+                            samples=train_set.take_valid(sample=0.5),
                             use_albumentations=True,
                             transform=transforms.get_transforms())
 
-train_loader = DataLoader(train_set, batch_size=32, shuffle=True)
 
-# print(train_loader.dataset)
-# print(len(train_set))
+valid_loader = DataLoader(valid_set, batch_size=32, shuffle=True)
+
+view.show_dataset(valid_set)
