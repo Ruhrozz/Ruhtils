@@ -17,8 +17,8 @@ def show_dataset(dataset: Any, height: int = 3, width: int = 4) -> None:
     plt.show()
 
 
-def show_dataloader(dataloader: Any, *args, **kwargs) -> None:
-    show_dataset(dataset=dataloader.dataset, *args, **kwargs)
+def show_dataloader(dataloader: Any, height: int = 3, width: int = 4) -> None:
+    show_dataset(dataloader.dataset, height, width)
 
 
 
