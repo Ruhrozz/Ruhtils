@@ -1,47 +1,50 @@
-import numpy as np
 import matplotlib.pyplot as plt
+from typing import Any
+import torch
 
 
-def show_samples(dataloader, n_samples=9, classes=None):
-    """ It shows `n` samples of dataset's images
-    and writes label on bottom of the image.
-    
-    Parameters
-    ----------
-    dataloader: torch.utils.data.dataloader.DataLoader
-        Where will pictures be taken from.
-        
-    classes: dict
-        Names of classes on pictures.
-        
-    n_samples: int
-        How many pictures to show on the screen.
-        
-    """
+def show_dataset(dataset: Any, height: int = 3, width: int = 4) -> None:
+    images = [dataset[i][0] for i in range(height * width)]
+    size = images[0].shape
 
-    if n_samples <= 0:
-        return 
+    # Best regards to AetelFinch
+    image = torch.cat(images, dim=2)
+    image = torch.split(image, size[2] * width, dim=2)
+    image = torch.hstack(image)
 
-    plt.rcParams["figure.figsize"] = (13, 13)
-
-    grid = np.ceil(np.sqrt(n_samples)).astype(int)
-    images, labels = next(iter(dataloader))
-
-    jump = 0
-
-    for i in range(n_samples):
-        if i + jump >= len(images):
-            images, labels = next(iter(dataloader))
-            jump = -i
-
-        plt.subplot(grid, grid, i + 1)
-        plt.imshow(images[i + jump].permute([1, 2, 0]))
-        
-        if classes is not None:
-            plt.xlabel(classes[labels[i + jump].item()])
-        else:
-            plt.axis('off')
-
+    plt.imshow(image.permute([1, 2, 0]))
+    plt.axis('off')
     plt.show()
+
+
+def show_dataloader(dataloader: Any, *args, **kwargs) -> None:
+    show_dataset(dataset=dataloader.dataset, *args, **kwargs)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
