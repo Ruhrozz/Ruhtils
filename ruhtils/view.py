@@ -3,6 +3,7 @@ from typing import Any
 import torch
 
 
+# TODO: check size
 def show_dataset(dataset: Any, height: int = 3, width: int = 4) -> None:
     images = [dataset[i][0] for i in range(height * width)]
 

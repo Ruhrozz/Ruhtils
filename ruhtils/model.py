@@ -2,6 +2,10 @@ import torch
 from typing import Optional, Any
 
 
+# TODO: "get pretrained ResNet" function
+# TODO: "get pretrained MobileNetV2" function
+
+
 def get_model(backbone: str,
               num_classes: int,
               weights: Optional[Any] = None):
