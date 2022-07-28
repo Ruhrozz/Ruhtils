@@ -1,23 +1,26 @@
-import torch
-from torch.utils.data import DataLoader
-import numpy as np
-import torchvision
-import ruhtils.dataset as dataset
-import ruhtils.transforms as transforms
+import ruhtils.data.dataset as dataset
+import ruhtils.data.dataloader as dataloader
+import ruhtils.data.transforms as transforms
 import ruhtils.view as view
 import ruhtils.model as net
-import matplotlib.pyplot as plt
-
 
 cfg = {
-    "backbone": "resnet50",
+    "backbone": "mobilenet_v2",
     "num_classes": 2,
-    "weights": None,
+    "weights": "IMAGENET1K_V1",
 
     "image_dir": "datasets/pizza_not_pizza/",
     "val_size": 0.1,
 
-    "batch_size": 3,
+    "device": "CPU",
+
+    "dataloader_cfg": {
+        "batch_size": 3,
+        "shuffle": True,
+        "num_workers": 0,
+        "drop_last": False,
+    },
+
     "lr": 1e-3,
     "weight_decay": 1e-2,
     "epoch_size": 5,
@@ -33,11 +36,12 @@ train_set = dataset.ImageFolder(cfg["image_dir"],
 
 
 valid_set = dataset.Dataset(root=cfg["image_dir"],
-                            samples=train_set.take_valid(sample=0.5),
+                            samples=train_set.take_valid(sample=0.005),
                             use_albumentations=True,
                             transform=transforms.get_transforms())
 
 
-valid_loader = DataLoader(valid_set, batch_size=32, shuffle=True)
+valid_loader = dataloader.get_dataloader(valid_set, device=cfg["device"], **cfg["dataloader_cfg"])
 
-view.show_dataset(valid_set)
+print(len(valid_set))
+view.show_dataloader(valid_loader)
