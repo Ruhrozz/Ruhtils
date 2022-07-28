@@ -3,8 +3,12 @@ from typing import Any
 import torch
 
 
-# TODO: check size
+# TODO: add showing image for each label
+# TODO: add showing right and wrong answers
 def show_dataset(dataset: Any, height: int = 3, width: int = 4) -> None:
+    if len(dataset) < height * width:
+        height = width = round(len(dataset) ** 0.5)
+
     images = [dataset[i][0] for i in range(height * width)]
 
     size = dataset[0][0].shape
