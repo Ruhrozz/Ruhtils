@@ -6,6 +6,7 @@ You can find here:
 3. Training model such as "ResNet50"
 """
 
+
 from ruhtils.data import dataset
 from ruhtils.data import dataloader
 from ruhtils.data import transforms
@@ -13,48 +14,41 @@ from ruhtils import view
 import ruhtils.model as net
 
 
-def main():
+cfg = {
+    "backbone": "mobilenet_v2",
+    "num_classes": 2,
+    "weights": "IMAGENET1K_V1",
 
-    cfg = {
-        "backbone": "mobilenet_v2",
-        "num_classes": 2,
-        "weights": "IMAGENET1K_V1",
+    "image_dir": "datasets/pizza_not_pizza/",
+    "val_size": 0.1,
 
-        "image_dir": "datasets/pizza_not_pizza/",
-        "val_size": 0.1,
+    "device": "CPU",
 
-        "device": "CPU",
+    "dataloader_cfg": {
+        "batch_size": 3,
+        "shuffle": True,
+        "num_workers": 0,
+        "drop_last": False,
+    },
 
-        "dataloader_cfg": {
-            "batch_size": 3,
-            "shuffle": True,
-            "num_workers": 0,
-            "drop_last": False,
-        },
+    "lr": 1e-3,
+    "weight_decay": 1e-2,
+    "epoch_size": 5,
+}
 
-        "lr": 1e-3,
-        "weight_decay": 1e-2,
-        "epoch_size": 5,
-    }
+model = net.get_model(cfg["backbone"],
+                      cfg["num_classes"],
+                      weights=cfg["weights"])
 
-    model = net.get_model(cfg["backbone"],
-                          cfg["num_classes"],
-                          weights=cfg["weights"])
-
-    train_set = dataset.ImageFolder(cfg["image_dir"],
-                                    use_albumentations=True,
-                                    transform=transforms.get_transforms(is_train=True))
-
-    valid_set = dataset.Dataset(root=cfg["image_dir"],
-                                samples=train_set.take_valid(sample=0.005),
+train_set = dataset.ImageFolder(cfg["image_dir"],
                                 use_albumentations=True,
-                                transform=transforms.get_transforms())
+                                transform=transforms.kbrodt_transforms(is_train=True))
 
-    valid_loader = dataloader.get_dataloader(valid_set, device=cfg["device"], **cfg["dataloader_cfg"])
+valid_set = dataset.Dataset(samples=train_set.take_valid(sample=0.005),
+                            use_albumentations=True,
+                            transform=transforms.kbrodt_transforms())
 
-    print(len(valid_set))
-    view.show_dataloader(valid_loader)
+valid_loader = dataloader.get_dataloader(valid_set, device=cfg["device"], **cfg["dataloader_cfg"])
 
-
-if __name__ == "__main__":
-    main()
+print(len(valid_set))
+view.show_dataloader(valid_loader)
