@@ -1,9 +1,24 @@
+"""Module for saving patterns and
+further usage for augmentation tasks"""
+
+
+from typing import Optional, Callable
 import cv2
 import albumentations as A
 from albumentations.pytorch import transforms as T
 
 
-def get_transforms(is_train=False, p=0.5):
+def kbrodt_transforms(is_train: Optional[bool] = False,
+                      p: Optional[float] = 0.5) -> Callable:
+    """This function was taken from kbrodt GitHub
+    Args:
+        is_train: Optional[bool]
+            Return augs for valid or train data.
+        p: Optional[float]
+            Percentage of augmented data.
+    Return:
+        Composition of augmentations for train or valid data.
+    """
     if is_train:
         augs = [
             A.HorizontalFlip(p=p),

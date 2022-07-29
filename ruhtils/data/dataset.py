@@ -1,15 +1,29 @@
-import cv2
-from random import shuffle
+"""
+This module contains functions and classes
+for getting and creating datasets.
+"""
 
+
+from random import shuffle
+from typing import Tuple, Optional, Callable, List, Any
+import cv2
+import numpy as np
 from torchvision.datasets import VisionDataset
 from torchvision.datasets.folder import DatasetFolder
-from typing import Tuple, Optional, Callable, List, Any
 
 
 IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".ppm", ".bmp", ".pgm", ".tif", ".tiff", ".webp")
 
 
-def default_loader(image_path):
+def default_loader(image_path: str) -> np.ndarray:
+    """ Default image loader for class ImageFolder
+    Args:
+        image_path: str
+            Path like "C:/Pictures/image1.png"
+    Return:
+        np.ndarray
+            Image [Channels, Height, Width]
+    """
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
@@ -17,11 +31,24 @@ def default_loader(image_path):
 
 
 class ImageFolder(DatasetFolder):
+    """This class is the same thing as ImageFolder class from torchvision.
+    see also:
+    https://github.com/pytorch/vision/blob/main/torchvision/datasets/folder.py
+    Args:
+        root: str
+            Where pictures will be taken from.
+        transform: Optional[Callable]
+            Torch or Albumentations transform compose.
+        target_transform: Optional[Callable]
+            This function will be applied to dataset's labels.
+        use_albumentations: Optional[bool]
+            Whether to use albumentations transform semantic.
+    """
     def __init__(self,
                  root: str,
-                 use_albumentations: Optional[bool] = False,
                  transform: Optional[Callable] = None,
-                 target_transform: Optional[Callable] = None) -> None:
+                 target_transform: Optional[Callable] = None,
+                 use_albumentations: Optional[bool] = False) -> None:
         super().__init__(root=root,
                          extensions=IMG_EXTENSIONS,
                          target_transform=target_transform,
@@ -50,16 +77,27 @@ class ImageFolder(DatasetFolder):
         return valid
 
 
+# TODO: remove root from class
 class Dataset(VisionDataset):
+    """This class makes a dataset from image paths and labels.
+    Args:
+        samples: List[Tuple[str, int]]
+            Dataset samples [("path":str, class:int), ...]
+        transform: Optional[Callable]
+            Torch or Albumentations transform compose.
+        target_transform: Optional[Callable]
+            This function will be applied to dataset's labels.
+        use_albumentations: Optional[bool]
+            Whether to use albumentations transform semantic.
+    """
     def __init__(
             self,
-            root: str,
             samples: List[Tuple[str, int]],
             transform: Optional[Callable] = None,
             target_transform: Optional[Callable] = None,
             use_albumentations: bool = False,
     ) -> None:
-        super().__init__(root=root,
+        super().__init__(root="no root",
                          target_transform=target_transform)
 
         if use_albumentations and transform is not None:

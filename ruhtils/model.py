@@ -1,8 +1,11 @@
+"""Module keeps functions for getting models"""
+
+
+from typing import Optional
 import torch
-from typing import Optional, Any
 
 
-def get_pretrained_resnet50(weights, num_classes):
+def _get_pretrained_resnet50(weights, num_classes):
     model = torch.hub.load('pytorch/vision',
                            model='resnet50',
                            weights=weights)
@@ -12,7 +15,7 @@ def get_pretrained_resnet50(weights, num_classes):
     return model
 
 
-def get_pretrained_mobilenet_v2(weights, num_classes):
+def _get_pretrained_mobilenet_v2(weights, num_classes):
     model = torch.hub.load('pytorch/vision',
                            model='mobilenet_v2',
                            weights=weights)
@@ -22,15 +25,27 @@ def get_pretrained_mobilenet_v2(weights, num_classes):
     return model
 
 
+# TODO: simplify protected get-functions
 def get_model(backbone: str,
               num_classes: int,
-              weights: Optional[Any] = None):
+              weights: Optional[str] = None):
+    """Function takes last version of model from GitHub.
+    Args:
+        backbone: str
+            Name of model.
+        weights: Optional[str]
+            If model is pretrained, write training dataset.
+            It is a new torch feature, see their GitHub.
+        num_classes: int
+    Return:
+        model
+    """
 
     if weights is not None:
         if backbone == "resnet50":
-            return get_pretrained_resnet50(weights, num_classes)
-        elif backbone == "mobilenet_v2":
-            return get_pretrained_mobilenet_v2(weights, num_classes)
+            return _get_pretrained_resnet50(weights, num_classes)
+        if backbone == "mobilenet_v2":
+            return _get_pretrained_mobilenet_v2(weights, num_classes)
 
     model = torch.hub.load('pytorch/vision',
                            model=backbone,

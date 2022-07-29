@@ -1,15 +1,25 @@
-import torch
+"""Model validation function"""
+
+
 from typing import Tuple
+import torch
 import numpy as np
 
 
 def valid_fn(model, dataloader, criterion, device) -> Tuple[float, float]:
+    """Args:
+            model
+            dataloader
+            criterion
+            device
+        Return:
+            (Accuracy, Loss) -  for history in view module."""
     model.eval()
 
     running_accuracy = 0
     running_loss = 0
 
-    for batch_idx, (inputs, labels) in enumerate(dataloader):
+    for inputs, labels in dataloader:
         inputs = inputs.to(device)
         labels = labels.to(device)
 
