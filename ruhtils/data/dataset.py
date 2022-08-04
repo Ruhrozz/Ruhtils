@@ -6,17 +6,16 @@ for getting and creating datasets.
 
 from random import shuffle
 from typing import Tuple, Optional, Callable, List, Any
+
 import cv2
 import numpy as np
+from PIL import Image
 from torchvision.datasets import VisionDataset
-from torchvision.datasets.folder import DatasetFolder
+from torchvision.datasets import ImageFolder as ImageFolder_torch
 
 
-IMG_EXTENSIONS = (".jpg", ".jpeg", ".png", ".ppm", ".bmp", ".pgm", ".tif", ".tiff", ".webp")
-
-
-def default_loader(image_path: str) -> np.ndarray:
-    """ Default image loader for class ImageFolder
+def cv_loader(image_path: str) -> np.ndarray:
+    """ Image loader for class ImageFolder using cv2.
     Args:
         image_path: str
             Path like "C:/Pictures/image1.png"
@@ -30,54 +29,20 @@ def default_loader(image_path: str) -> np.ndarray:
     return image
 
 
-class ImageFolder(DatasetFolder):
-    """This class is the same thing as ImageFolder class from torchvision.
-    see also:
-    https://github.com/pytorch/vision/blob/main/torchvision/datasets/folder.py
-    Args:
-        root: str
-            Where pictures will be taken from.
-        transform: Optional[Callable]
-            Torch or Albumentations transform compose.
-        target_transform: Optional[Callable]
-            This function will be applied to dataset's labels.
-        use_albumentations: Optional[bool]
-            Whether to use albumentations transform semantic.
-    """
-    def __init__(self,
-                 root: str,
-                 transform: Optional[Callable] = None,
-                 target_transform: Optional[Callable] = None,
-                 use_albumentations: Optional[bool] = False) -> None:
-        super().__init__(root=root,
-                         extensions=IMG_EXTENSIONS,
-                         target_transform=target_transform,
-                         loader=default_loader)
-
-        if use_albumentations:
-            self.transform = lambda image: transform(image=image)["image"]
-        else:
-            self.transform = transform
-
-    def take_valid(self, sample: float = 0.2) -> List[Tuple[str, int]]:
-        """Splits sample to 2 disjoint sets with given validation percentage
+def pil_loader(path: str) -> Image.Image:
+    """ Image loader for class ImageFolder using PIL.
         Args:
-            sample: percentage of the validation sample
-        Returns:
-            List[Tuple[str, int]]: valid samples of a form (path_to_sample, class)
+            path: str
+                Path like "C:/Pictures/image1.png"
+        Return:
+            np.ndarray
+                Image [Channels, Height, Width]
         """
-        shuffle(self.samples)
-
-        threshold = int(len(self.samples) * sample)
-
-        valid = self.samples[:threshold]
-        self.samples = self.samples[threshold:]
-        self.targets = [s[1] for s in self.samples]
-
-        return valid
+    with open(path, "rb") as f:
+        img = Image.open(f)
+        return img.convert("RGB")
 
 
-# TODO: remove root from class
 class Dataset(VisionDataset):
     """This class makes a dataset from image paths and labels.
     Args:
@@ -109,7 +74,7 @@ class Dataset(VisionDataset):
 
     def __getitem__(self, index: int) -> Tuple[Any, Any]:
         path, target = self.samples[index]
-        sample = default_loader(path)
+        sample = pil_loader(path)
 
         if self.transform is not None:
             sample = self.transform(sample)
@@ -121,3 +86,48 @@ class Dataset(VisionDataset):
 
     def __len__(self) -> int:
         return len(self.samples)
+
+
+class ImageFolder(ImageFolder_torch):
+    """This class is the same thing as ImageFolder class from torchvision.
+    see also:
+    https://github.com/pytorch/vision/blob/main/torchvision/datasets/folder.py
+    Args:
+        root: str
+            Where pictures will be taken from.
+        transform: Optional[Callable]
+            Torch or Albumentations transform compose.
+        target_transform: Optional[Callable]
+            This function will be applied to dataset's labels.
+        use_albumentations: Optional[bool]
+            Whether to use albumentations transform semantic.
+    """
+    def __init__(self,
+                 root: str,
+                 transform: Optional[Callable] = None,
+                 target_transform: Optional[Callable] = None,
+                 use_albumentations: Optional[bool] = False) -> None:
+        super().__init__(root=root,
+                         target_transform=target_transform)
+
+        if use_albumentations and transform is not None:
+            self.transform = lambda image: transform(image=np.array(image))["image"]
+        else:
+            self.transform = transform
+
+    def take_valid(self, sample: float = 0.2) -> List[Tuple[str, int]]:
+        """Splits sample to 2 disjoint sets with given validation percentage
+        Args:
+            sample: percentage of the validation sample
+        Returns:
+            List[Tuple[str, int]]: valid samples of a form (path_to_sample, class)
+        """
+        shuffle(self.samples)
+
+        threshold = int(len(self.samples) * sample)
+
+        valid = self.samples[:threshold]
+        self.samples = self.samples[threshold:]
+        self.targets = [s[1] for s in self.samples]
+
+        return valid
