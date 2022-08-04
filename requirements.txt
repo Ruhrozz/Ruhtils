@@ -1,6 +1,8 @@
-torch
-matplotlib
-numpy
-torchvision
-opencv-python
-albumentations
+torch~=1.12.0
+matplotlib~=3.5.2
+numpy~=1.23.1
+torchvision~=0.13.0
+opencv-python~=4.6.0.66
+albumentations~=1.2.1
+Pillow~=9.2.0
+tqdm~=4.64.0
