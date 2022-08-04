@@ -2,26 +2,35 @@
 
 
 from typing import Tuple
-import numpy as np
+from tqdm import tqdm
 
 
-def train_fn(model, dataloader, optimizer, criterion, device) -> Tuple[float, float]:
+def train_fn(model, dataloader, optimizer, criterion, **kwargs) -> Tuple[float, float]:
     """Args:
             model
             dataloader
             optimizer
             criterion
-            device
+            kwargs:
+                device
+                epoch
         Return:
             (Accuracy, Loss) -  for history in view module."""
     model.train()
-
     running_loss = 0
     running_accuracy = 0
+    if "epoch" not in kwargs:
+        kwargs["epoch"] = '???'
 
-    for inputs, labels in dataloader:
-        inputs = inputs.to(device)
-        labels = labels.to(device)
+    pbar = tqdm(dataloader,
+                desc=f"Epoch: {kwargs['epoch']} --- Training... ",
+                leave=False,
+                unit="image")
+
+    for inputs, labels in pbar:
+        if "device" in kwargs:
+            inputs = inputs.to(kwargs["device"])
+            labels = labels.to(kwargs["device"])
 
         optimizer.zero_grad()
 
@@ -29,7 +38,7 @@ def train_fn(model, dataloader, optimizer, criterion, device) -> Tuple[float, fl
         loss = criterion(predicted, labels)
 
         running_loss += loss.item()
-        running_accuracy += np.sum(labels == predicted.argmax(axis=1))
+        running_accuracy += (labels == predicted.argmax(axis=1)).sum()
 
         loss.backward()
 
