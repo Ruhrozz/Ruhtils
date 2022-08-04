@@ -86,7 +86,12 @@ for epoch in range(cfg["epoch_size"]):
                          criterion,
                          device=device,
                          epoch=epoch)
-    t_h_valid = valid_fn(model, valid_loader, criterion, device)
+
+    t_h_valid = valid_fn(model,
+                         valid_loader,
+                         criterion,
+                         device=device,
+                         epoch=epoch)
 
     t_history = np.vstack((t_history, t_h_train))
     v_history = np.vstack((v_history, t_h_valid))
