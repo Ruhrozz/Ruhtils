@@ -6,10 +6,7 @@ You can find here:
 3. Training model such as "ResNet50"
 """
 
-# import time
 import numpy as np
-# from tqdm import tqdm
-import matplotlib.pyplot as plt
 
 import torch
 from torch import optim
@@ -20,7 +17,7 @@ from ruhtils.data import dataloader
 from ruhtils.data import transforms
 from ruhtils.train import train_fn
 from ruhtils.valid import valid_fn
-# from ruhtils import view
+from ruhtils import view
 import ruhtils.model as net
 
 
@@ -60,15 +57,14 @@ model = net.get_model(cfg["backbone"],
 
 
 train_set = dataset.ImageFolder(cfg["image_dir"],
-                                # use_albumentations=True,
-                                # transform=transforms.kbrodt_transforms(is_train=True),
-                                transform=transforms.torch_transforms(is_train=True),
+                                use_albumentations=True,
+                                transform=transforms.kbrodt_transforms(is_train=True),
                                 )
 valid_set = dataset.Dataset(samples=train_set.take_valid(sample=0.005),
-                            # use_albumentations=True,
-                            # transform=transforms.kbrodt_transforms(),
-                            transform=transforms.torch_transforms(),
+                            use_albumentations=True,
+                            transform=transforms.kbrodt_transforms(),
                             )
+
 
 train_loader = dataloader.get_dataloader(train_set, device=cfg["device"], **cfg["dataloader_cfg"])
 valid_loader = dataloader.get_dataloader(valid_set, device=cfg["device"], **cfg["dataloader_cfg"])
@@ -95,8 +91,4 @@ for epoch in range(cfg["epoch_size"]):
 
     t_history = np.vstack((t_history, t_h_train))
     v_history = np.vstack((v_history, t_h_valid))
-
-plt.plot(t_history.T[0], "r")
-plt.plot(t_history.T[1], "g--")
-plt.grid()
-plt.show()
+    view.show_plots(t_history.T, v_history.T, save=True)
