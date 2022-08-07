@@ -34,7 +34,7 @@ def kbrodt_transforms(is_train: Optional[bool] = False,
                    A.MedianBlur(p=1),
                    A.MotionBlur(p=1),
                ],
-               p=p,
+                p=p,
             ),
             A.RandomBrightnessContrast(p=p),
             A.OneOf(
@@ -43,14 +43,14 @@ def kbrodt_transforms(is_train: Optional[bool] = False,
                    A.ColorJitter(p=1),
                    A.RandomToneCurve(p=1),  # works only for uint
                ],
-               p=p,
+                p=p,
             ),
             A.OneOf(
                [
                    A.GaussNoise(p=1),
                    A.MultiplicativeNoise(p=1),
                ],
-               p=p,
+                p=p,
             ),
             A.OneOf(
                 [
