@@ -67,14 +67,16 @@ class Dataset(VisionDataset):
 
         if use_albumentations and transform is not None:
             self.transform = lambda image: transform(image=image)["image"]
+            self.loader = cv_loader
         else:
             self.transform = transform
+            self.loader = pil_loader
 
         self.samples = samples
 
     def __getitem__(self, index: int) -> Tuple[Any, Any]:
         path, target = self.samples[index]
-        sample = pil_loader(path)
+        sample = self.loader(path)
 
         if self.transform is not None:
             sample = self.transform(sample)
