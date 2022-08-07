@@ -1,7 +1,6 @@
 """Module for saving patterns and
 further usage for augmentation tasks"""
 
-
 from typing import Optional, Callable
 import cv2
 import albumentations as A
@@ -27,29 +26,29 @@ def kbrodt_transforms(is_train: Optional[bool] = False,
             A.HorizontalFlip(p=p),
             A.CoarseDropout(max_holes=8, max_height=8, max_width=8, p=p),
             A.OneOf(
-               [
-                   A.Blur(p=1),
-                   A.GlassBlur(p=1),
-                   A.GaussianBlur(p=1),
-                   A.MedianBlur(p=1),
-                   A.MotionBlur(p=1),
-               ],
+                [
+                    A.Blur(p=1),
+                    A.GlassBlur(p=1),
+                    A.GaussianBlur(p=1),
+                    A.MedianBlur(p=1),
+                    A.MotionBlur(p=1),
+                ],
                 p=p,
             ),
             A.RandomBrightnessContrast(p=p),
             A.OneOf(
-               [
-                   A.RandomGamma(p=1),  # works only for uint
-                   A.ColorJitter(p=1),
-                   A.RandomToneCurve(p=1),  # works only for uint
-               ],
+                [
+                    A.RandomGamma(p=1),  # works only for uint
+                    A.ColorJitter(p=1),
+                    A.RandomToneCurve(p=1),  # works only for uint
+                ],
                 p=p,
             ),
             A.OneOf(
-               [
-                   A.GaussNoise(p=1),
-                   A.MultiplicativeNoise(p=1),
-               ],
+                [
+                    A.GaussNoise(p=1),
+                    A.MultiplicativeNoise(p=1),
+                ],
                 p=p,
             ),
             A.OneOf(
