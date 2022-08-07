@@ -15,8 +15,7 @@ from torch.nn import CrossEntropyLoss
 from ruhtils.data import dataset
 from ruhtils.data import dataloader
 from ruhtils.data import transforms
-from ruhtils.train import train_fn
-from ruhtils.valid import valid_fn
+from ruhtils.train import trainval
 from ruhtils import view
 import ruhtils.model as net
 
@@ -29,7 +28,7 @@ cfg = {
     "image_dir": "datasets/pizza_not_pizza/",
     "val_size": 0.1,
 
-    "device": "CPU",
+    "run_on": "CPU",
 
     "dataloader_cfg": {
         "batch_size": 3,
@@ -66,8 +65,8 @@ valid_set = dataset.Dataset(samples=train_set.take_valid(sample=0.005),
                             )
 
 
-train_loader = dataloader.get_dataloader(train_set, device=cfg["device"], **cfg["dataloader_cfg"])
-valid_loader = dataloader.get_dataloader(valid_set, device=cfg["device"], **cfg["dataloader_cfg"])
+train_loader = dataloader.get_dataloader(train_set, cfg["run_on"], **cfg["dataloader_cfg"])
+valid_loader = dataloader.get_dataloader(valid_set, cfg["run_on"], **cfg["dataloader_cfg"])
 
 
 optimizer = optim.Adam(model.parameters(), **cfg["optimizer_cfg"])
@@ -76,16 +75,18 @@ criterion = CrossEntropyLoss()
 v_history = t_history = np.array([0, 0])
 
 for epoch in range(cfg["epoch_size"]):
-    t_h_train = train_fn(model,
+    t_h_train = trainval(model,
                          valid_loader,
-                         optimizer,
-                         criterion,
+                         optimizer=optimizer,
+                         criterion=criterion,
                          device=device,
-                         epoch=epoch)
+                         epoch=epoch,
+                         is_train=True
+                         )
 
-    t_h_valid = valid_fn(model,
+    t_h_valid = trainval(model,
                          valid_loader,
-                         criterion,
+                         criterion=criterion,
                          device=device,
                          epoch=epoch)
 
