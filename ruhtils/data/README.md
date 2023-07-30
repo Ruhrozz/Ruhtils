@@ -4,7 +4,6 @@
 ```
 ffmpeg -i video1.mp4  -i video2.mp4 -filter_complex hstack=inputs=2 output.mp4
 ```
-TODO: Answer which video on left which on right
 
 #### How to compress video
 ```
@@ -21,4 +20,8 @@ ffmpeg -framerate 30 -pattern_type glob -i '*.jpg'   -c:v libx264 -qp 0 -pix_fmt
 #### How repair corrupted video
 ```
 ffmpeg -vcodec mpeg4 -b:v 7561k -qscale:v 2 -acodec aac -ac 2 -async 1 -strict experimental ./video_fixed.mp4 -threads 0 -i damage_file.mp4
+```
+#### Output one image every second:
+```
+ffmpeg -i input.mp4 -vf fps=1 out%d.png
 ```
